@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Widget</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -30,12 +29,13 @@ html, body {
   border-radius:20px;
 }
 
-.gif-box img {
+#gif {
   position:absolute;
   width:100%;
   height:100%;
   object-fit:cover;
   object-position:center;
+  transition:opacity 0.25s ease;
 }
 
 /* 텍스트 */
@@ -51,13 +51,8 @@ html, body {
     0 0 24px rgba(0,0,0,0.4);
 }
 
-/* 폰트 조절 */
-.font-control {
-  opacity:0;
-}
-.dt-overlay:hover .font-control {
-  opacity:1;
-}
+.font-control { opacity:0; }
+.dt-overlay:hover .font-control { opacity:1; }
 
 /* 컨트롤 */
 .ctrl-box {
@@ -67,7 +62,6 @@ html, body {
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:10px;
 }
 
 .btn-row {
@@ -105,7 +99,6 @@ html, body {
 
 <div class="widget">
 
-  <!-- GIF -->
   <div class="gif-box">
     <img id="gif">
 
@@ -119,11 +112,9 @@ html, body {
     </div>
   </div>
 
-  <!-- 컨트롤 -->
   <div class="ctrl-box">
     <div class="btn-row">
 
-      <!-- 정지 -->
       <button class="btn" onclick="stopMusic()">
         <svg viewBox="0 0 24 24">
           <rect x="6" y="5" width="4" height="14"/>
@@ -131,21 +122,18 @@ html, body {
         </svg>
       </button>
 
-      <!-- 재생 -->
       <button class="btn" onclick="playMusic()">
         <svg viewBox="0 0 24 24">
           <polygon points="6,4 20,12 6,20"/>
         </svg>
       </button>
 
-      <!-- 셔플 -->
       <button class="btn" onclick="shuffleGIF()">
         <svg viewBox="0 0 24 24">
           <path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42 4.3-4.29H16V3zM4 7h3l4 5-4 5H4v-2h2.5l3-3.5-3-3.5H4V7zm16 10v-2h-1.59l-4.3-4.29 1.42-1.42 4.29 4.3V11h2v6h-5z"/>
         </svg>
       </button>
 
-      <!-- 비 -->
       <button class="btn" onclick="rainMusic()">
         <svg viewBox="0 0 24 24">
           <path d="M6 14a4 4 0 1 1 1-7 5 5 0 0 1 10 1h1a3 3 0 0 1 0 6H6zm2 2l-1 3m5-3l-1 3m5-3l-1 3"/>
@@ -157,26 +145,33 @@ html, body {
 
 </div>
 
-<!-- 🔥 오디오 -->
 <audio id="bgm" loop></audio>
 
 <script>
 
-/* =========================
-   GIF
-========================= */
+/* GIF */
 const gifs = ["gif1.gif","gif2.gif","gif3.gif"];
 const gif = document.getElementById("gif");
 
+let currentGIF = "";
+
 function shuffleGIF(){
-  const pick = gifs[Math.floor(Math.random()*gifs.length)];
-  gif.src = pick;
+  let available = gifs.filter(g => g !== currentGIF);
+  const pick = available[Math.floor(Math.random()*available.length)];
+
+  currentGIF = pick;
+
+  gif.style.opacity = 0;
+
+  setTimeout(()=>{
+    gif.src = pick + "?t=" + Date.now();
+    gif.style.opacity = 1;
+  },120);
 }
+
 shuffleGIF();
 
-/* =========================
-   시간
-========================= */
+/* 시간 */
 function updateTime(){
   const now = new Date();
   datetime.innerText =
@@ -186,9 +181,7 @@ function updateTime(){
 setInterval(updateTime,1000);
 updateTime();
 
-/* =========================
-   폰트 저장
-========================= */
+/* 폰트 저장 */
 let fontSize = localStorage.getItem("fontSize") || 14;
 
 function changeFont(d){
@@ -198,12 +191,9 @@ function changeFont(d){
 }
 datetime.style.fontSize = fontSize+"px";
 
-/* =========================
-   🎵 음악 (핵심)
-========================= */
+/* 음악 */
 const bgm = document.getElementById("bgm");
 
-/* ▶ 1번 */
 function playMusic(){
   if (!bgm.src.includes("1.mp3")) {
     bgm.src = "1.mp3";
@@ -211,7 +201,6 @@ function playMusic(){
   bgm.play();
 }
 
-/* 🌧 2번 */
 function rainMusic(){
   if (!bgm.src.includes("2.mp3")) {
     bgm.src = "2.mp3";
@@ -219,7 +208,6 @@ function rainMusic(){
   bgm.play();
 }
 
-/* ⏸ 정지 */
 function stopMusic(){
   bgm.pause();
 }
