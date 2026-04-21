@@ -3,34 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GIF Widget</title>
+<title>Widget</title>
 
 <style>
-body { margin:0; background:transparent; }
+* { box-sizing: border-box; }
+
+html, body {
+  margin:0;
+  height:100%;
+  overflow:hidden;
+}
 
 .widget {
   display:flex;
   flex-direction:column;
   gap:10px;
-  height:100vh;
+  height:100%;
   padding:10px;
 }
 
 /* GIF */
 .gif-box {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
+  flex:1;
+  position:relative;
+  overflow:hidden;
   border-radius:20px;
-  background:#000;
 }
 
 .gif-box img {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center center;
+  position:absolute;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
 }
 
 /* 텍스트 */
@@ -46,11 +51,10 @@ body { margin:0; background:transparent; }
     0 0 24px rgba(0,0,0,0.4);
 }
 
+/* 폰트 조절 */
 .font-control {
   opacity:0;
-  transition:0.2s;
 }
-
 .dt-overlay:hover .font-control {
   opacity:1;
 }
@@ -77,35 +81,22 @@ body { margin:0; background:transparent; }
   border-radius:50%;
   border:2px solid rgba(255,255,255,0.7);
   background:transparent;
-  color:white;
-  cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:all 0.15s ease;
+  cursor:pointer;
+  transition:0.15s;
 }
 
 .btn:hover {
-  transform: scale(1.12);
-  background: rgba(255,255,255,0.12);
-}
-
-.btn:active {
-  transform: scale(0.92);
+  transform:scale(1.12);
+  background:rgba(255,255,255,0.12);
 }
 
 .btn svg {
   width:18px;
   height:18px;
   fill:white;
-}
-
-/* 프로그레스 */
-.track {
-  width:100%;
-  height:6px;
-  background:rgba(255,255,255,0.3);
-  border-radius:3px;
 }
 </style>
 </head>
@@ -162,89 +153,75 @@ body { margin:0; background:transparent; }
       </button>
 
     </div>
-
-    <div class="track"></div>
   </div>
 
 </div>
 
-<!-- 음악 -->
-<iframe id="music1" style="display:none"
-src="https://w.soundcloud.com/player/?url=https://soundcloud.com/lofi"></iframe>
-
-<iframe id="music2" style="display:none"
-src="https://w.soundcloud.com/player/?url=https://soundcloud.com/rain"></iframe>
+<!-- 🔥 오디오 -->
+<audio id="bgm" loop></audio>
 
 <script>
 
-/* GIF */
-const gifs = [
-  "gif1.gif",
-  "gif2.gif",
-  "gif3.gif"
-];
-
+/* =========================
+   GIF
+========================= */
+const gifs = ["gif1.gif","gif2.gif","gif3.gif"];
 const gif = document.getElementById("gif");
 
-let history = [];
-
-function shuffleGIF() {
-  let available = gifs.filter(g => !history.includes(g));
-  if (available.length === 0) available = gifs;
-
-  const pick = available[Math.floor(Math.random() * available.length)];
-
+function shuffleGIF(){
+  const pick = gifs[Math.floor(Math.random()*gifs.length)];
   gif.src = pick;
-
-  history.push(pick);
-  if (history.length > 2) history.shift();
 }
-
 shuffleGIF();
 
 /* =========================
-   폰트 (저장 포함)
+   시간
 ========================= */
-let fontSize = localStorage.getItem("fontSize") 
-  ? parseInt(localStorage.getItem("fontSize")) 
-  : 14;
-
-function applyFont() {
-  document.getElementById("datetime").style.fontSize = fontSize + "px";
-}
-
-function changeFont(d){
-  fontSize += d;
-  fontSize = Math.max(10, Math.min(30, fontSize));
-
-  applyFont();
-  localStorage.setItem("fontSize", fontSize);
-}
-
-applyFont();
-
-/* 시간 */
 function updateTime(){
   const now = new Date();
-  document.getElementById("datetime").innerText =
+  datetime.innerText =
     now.getFullYear()+"년 "+(now.getMonth()+1)+"월 "+now.getDate()+"일\n"+
     now.toLocaleTimeString();
 }
 setInterval(updateTime,1000);
 updateTime();
 
-/* 음악 */
+/* =========================
+   폰트 저장
+========================= */
+let fontSize = localStorage.getItem("fontSize") || 14;
+
+function changeFont(d){
+  fontSize = Math.max(10, Math.min(30, parseInt(fontSize)+d));
+  datetime.style.fontSize = fontSize+"px";
+  localStorage.setItem("fontSize", fontSize);
+}
+datetime.style.fontSize = fontSize+"px";
+
+/* =========================
+   🎵 음악 (핵심)
+========================= */
+const bgm = document.getElementById("bgm");
+
+/* ▶ 1번 */
 function playMusic(){
-  music1.style.display="block";
-  music2.style.display="none";
+  if (!bgm.src.includes("1.mp3")) {
+    bgm.src = "1.mp3";
+  }
+  bgm.play();
 }
+
+/* 🌧 2번 */
 function rainMusic(){
-  music2.style.display="block";
-  music1.style.display="none";
+  if (!bgm.src.includes("2.mp3")) {
+    bgm.src = "2.mp3";
+  }
+  bgm.play();
 }
+
+/* ⏸ 정지 */
 function stopMusic(){
-  music1.style.display="none";
-  music2.style.display="none";
+  bgm.pause();
 }
 
 </script>
