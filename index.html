@@ -16,9 +16,7 @@ body { margin:0; background:transparent; }
   padding:10px;
 }
 
-/* =========================
-   GIF 영역
-========================= */
+/* GIF */
 .gif-box {
   flex: 1;
   position: relative;
@@ -35,9 +33,7 @@ body { margin:0; background:transparent; }
   object-position: center center;
 }
 
-/* =========================
-   텍스트 (그림자 ONLY)
-========================= */
+/* 텍스트 */
 .dt-overlay {
   position:absolute;
   bottom:16px;
@@ -59,9 +55,7 @@ body { margin:0; background:transparent; }
   opacity:1;
 }
 
-/* =========================
-   컨트롤바
-========================= */
+/* 컨트롤 */
 .ctrl-box {
   background:linear-gradient(160deg,#6CC4BC,#4BA8A0);
   border-radius:20px;
@@ -183,6 +177,7 @@ src="https://w.soundcloud.com/player/?url=https://soundcloud.com/rain"></iframe>
 
 <script>
 
+/* GIF */
 const gifs = [
   "gif1.gif",
   "gif2.gif",
@@ -207,13 +202,26 @@ function shuffleGIF() {
 
 shuffleGIF();
 
-/* 폰트 */
-let fontSize = 14;
+/* =========================
+   폰트 (저장 포함)
+========================= */
+let fontSize = localStorage.getItem("fontSize") 
+  ? parseInt(localStorage.getItem("fontSize")) 
+  : 14;
+
+function applyFont() {
+  document.getElementById("datetime").style.fontSize = fontSize + "px";
+}
+
 function changeFont(d){
   fontSize += d;
   fontSize = Math.max(10, Math.min(30, fontSize));
-  document.getElementById("datetime").style.fontSize = fontSize+"px";
+
+  applyFont();
+  localStorage.setItem("fontSize", fontSize);
 }
+
+applyFont();
 
 /* 시간 */
 function updateTime(){
